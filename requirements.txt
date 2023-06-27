@@ -1,0 +1,9 @@
+https://download.pytorch.org/whl/cu118/torch-2.0.0%2Bcu118-cp310-cp310-win_amd64.whl
+pandas
+numpy
+scikit-learn
+matplotlib
+seaborn
+torch_geometric
+tqdm
+packaging
