@@ -1,0 +1,1 @@
+{"params": {"embedding_dim": 128, "n_layers": 2, "train_n_epochs": 2, "valid_n_epochs": 1, "train_lr": 0.01, "valid_lr": 0.01, "valid_size": 0.1, "use_best": false}, "result": {"best_epoch": 1, "best_auc": 0.7070269207393372}}

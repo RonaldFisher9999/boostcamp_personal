@@ -1,6 +1,6 @@
 ```
 conda init
-conda create -n recsys python=3.10 -y
-conda activate recsys
+conda create -n boostcamp python==3.10.11 -y
+conda activate boostcamp
 pip install -r requirements.txt
 ```
