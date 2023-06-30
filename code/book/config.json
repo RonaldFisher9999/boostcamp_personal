@@ -1,9 +1,9 @@
 {
-  "model_name": "DeepFFM",
+  "model_name": "DeepFM",
   "valid_size": 0.2,
   "batch_size": 512,
   "embed_dim": 16,
-  "mlp_dims": [64, 64, 64],
+  "mlp_dims": [128, 128, 128],
   "dropout_rate": 0.2,
   "use_bn": true,
   "lr": 0.001,
@@ -16,5 +16,5 @@
   "data_dir": "../../data/book/",
   "model_dir": "./model/",
   "output_dir": "./output/",
-  "logging": false
+  "logging": true
 }

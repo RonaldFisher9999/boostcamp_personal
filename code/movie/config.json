@@ -1,0 +1,23 @@
+{
+  "max_len": 50,
+  "n_samples": 1, 
+  "tail_ratio": 0.5, 
+  "k": 10, 
+  "mask_prob": 0.5, 
+  "embed_dim": 128, 
+  "n_layers": 2, 
+  "n_heads": 4, 
+  "pffn_hidden_dim": 512, 
+  "dropout_rate": 0.3, 
+  "unidirection": false, 
+  "batch_size": 128, 
+  "lr": 0.001, 
+  "n_epochs": 1, 
+  "max_patience": 15,
+  "seed": 100,
+  "device": "cuda", 
+  "data_dir": "../../data/movie/", 
+  "model_dir": "./model/", 
+  "output_dir": "./output/", 
+  "logging": false
+}

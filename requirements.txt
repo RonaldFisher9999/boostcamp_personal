@@ -8,3 +8,4 @@ seaborn
 torch_geometric
 tqdm
 packaging
+wandb

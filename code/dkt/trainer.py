@@ -7,8 +7,8 @@ import torch
 import torch.nn as nn
 from sklearn.metrics import accuracy_score, roc_auc_score
 from tqdm import tqdm
-from .model import LightGCN
-from .utils import get_timestamp
+from model import LightGCN
+from utils import get_timestamp
 # import wandb
 
 
@@ -115,7 +115,7 @@ def inference(model: nn.Module,
               output_dir: str) :
     # valid data에서 가장 auc가 좋았던 모델의 파라미터 불러옴
     test_model = copy.deepcopy(model)
-    state_dict = torch.load(os.path.join(model_dir, f'best_model_{timestamp}.pt'))['model']
+    state_dict = torch.load(os.path.join(model_dir, f'LightGCN_{timestamp}.pt'))['model']
     test_model.load_state_dict(state_dict)
     
     test_model.add_new_users(user_groups)
@@ -145,18 +145,21 @@ def inference(model: nn.Module,
 
 # 훈련부터 제출까지
 def run(
+    model: nn.Module,
     data : dict,
     embedding_dim : int,
     n_layers : int,
     train_n_epochs : int,
     valid_n_epochs : int,
+    max_patience: int,
     train_lr : float,
     valid_lr : float,
     valid_size : float, # 여기서 사용하진 않지만 파라미터 출력용
     use_best : bool,
     model_dir : str,
     output_dir : str,
-    device : str
+    device : str,
+    timestamp: str
 ) :
     train_graph = data['train_graph']
     id2index = data['id2index']
@@ -164,14 +167,7 @@ def run(
     test_df = data['test_df']
     n_users = data['n_users']
     n_items = data['n_items']
-    
-    # 모델정의
-    model = LightGCN(n_users=n_users, n_items=n_items, group=train_graph['group'],
-                       embedding_dim=embedding_dim, n_layers=n_layers)
-    model.to(device)
-    
-    # 현재 시간
-    timestamp = get_timestamp()
+
     
     # 최적화 함수 정의, 모델 저장 폴더 생성
     optimizer = torch.optim.Adam(params=model.parameters(), lr=train_lr)
@@ -182,6 +178,8 @@ def run(
     valid_user_groups, valid_input_graph, valid_target_graph = process_valid_data(df=valid_df, id2index=id2index, device=device)
 
     best_auc, best_epoch = 0, -1
+    patience = 0
+    state_dict = dict()
     for epoch in tqdm(range(train_n_epochs)) :
         print(f"\nEpoch : {epoch}")
         # train 결과 반환
@@ -207,20 +205,25 @@ def run(
         print(f"Valid AUC : {valid_auc:.4f}")
         
         # auc갱신했으면 모델 저장
-        if valid_auc > best_auc :
+        if best_auc < valid_auc:
             print(f"Best AUC updated from {best_auc:.4f} to {valid_auc:.4f}")
             best_auc, best_epoch = valid_auc, epoch
             torch.save(obj= {"model": model.state_dict(), "epoch": epoch},
-                       f=os.path.join(model_dir, f"best_model_{timestamp}.pt"))
+                       f=os.path.join(model_dir, f"LightGCN_{timestamp}.pt"))
+            patience = 0
         else :
+            patience += 1
             print(f"Current Best AUC : {best_auc:.4f}")
             print(f"Current Best Epoch : {best_epoch}")
-    torch.save(obj={"model": model.state_dict(), "epoch": epoch},
-               f=os.path.join(model_dir, f"last_model_{timestamp}.pt"))
+            print(f"Patience Count: {patience}/{max_patience}")
+            if patience == max_patience:
+                print(f"No Score Improvement for {max_patience} epochs")
+                print("Early Stopped Training")
+                break
         
     # train 다 끝나면 최고 auc와 해당 epoch 출력
-    print(f"Best AUC Confirmed : {best_epoch}'th epoch")
     print(f"Best AUC Score : {best_auc:.4f}")
+    print(f"Best AUC Confirmed : {best_epoch}'th epoch")
     
     # 파라미터와 결과 json 파일로 저장
     report = {
@@ -240,7 +243,7 @@ def run(
         }
     }
     
-    with open(os.path.join(model_dir, f'report_{timestamp}.json'), 'w') as f:
+    with open(os.path.join(model_dir, f'LightGCN_{timestamp}.json'), 'w') as f:
         json.dump(report, f)
     
     # inference

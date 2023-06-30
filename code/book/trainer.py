@@ -3,6 +3,7 @@ import torch
 import torch.nn as nn
 from torch.nn import MSELoss
 from tqdm import tqdm
+import wandb
 
 
 class RMSELoss(nn.Module):
@@ -45,7 +46,7 @@ def validate(model, valid_loader, criterion):
         with torch.no_grad():
             pred = model.forward(x)
         loss = criterion(y, pred)
-        total_loss += loss
+        total_loss += loss.item()
 
     return total_loss/len(valid_loader)
 
@@ -57,6 +58,7 @@ def run(model,
         n_epochs,
         max_patience,
         model_dir,
+        logging,
         timestamp):
     criterion = RMSELoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)
@@ -67,10 +69,10 @@ def run(model,
         print(f"Epoch: {epoch}")
         print("Train")
         train_loss = train(model, train_loader, criterion, optimizer)
-        print(f"Loss: {train_loss:.4f}")
+        print(f"Train Loss: {train_loss:.4f}")
         print("Validate")
         valid_loss = validate(model, valid_loader, criterion)
-        print(f"{valid_loss:.4f}")
+        print(f"Valid Loss: {valid_loss:.4f}")
         
         if best_loss > valid_loss :
             print(f"{best_loss:.4f} -> {valid_loss:.4f}")
@@ -89,6 +91,16 @@ def run(model,
                 print(f"No Score Improvement for {max_patience} epochs")
                 print("Early Stopped Training")
                 break
+            
+        if logging == True:
+            wandb.log(
+                dict(
+                    train_loss=train_loss,
+                    valid_loss=valid_loss,
+                    best_loss=best_loss,
+                    patience=patience
+                )
+            )
             
     print(f"Best Loss: {best_loss:.4f}")
     print(f"Best Loss Confirmed: {best_epoch}'th epoch")

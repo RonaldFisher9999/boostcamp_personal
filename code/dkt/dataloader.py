@@ -2,10 +2,11 @@ import os
 import pandas as pd
 import numpy as np
 import torch
+from typing import Tuple
 
     
 # 데이터 불러오기
-def load_data(data_dir: str) -> tuple[pd.DataFrame, pd.DataFrame]:
+def load_data(data_dir: str) -> Tuple[pd.DataFrame, pd.DataFrame]:
     dtype = {'userID': 'int16', 'answerCode': 'int8', 'KnowledgeTag': 'int16'}
     raw_train_df = pd.read_csv(os.path.join(data_dir, "train_data.csv"),
                                dtype=dtype, parse_dates=['Timestamp'])
@@ -50,7 +51,7 @@ def process_data(raw_df: pd.DataFrame) -> pd.DataFrame:
 
 # 전체 유저에서 일정 비율의 유저 valid로 분리
 def split_data(train: pd.DataFrame,
-               valid_size: float) -> tuple[pd.DataFrame, pd.DataFrame] :
+               valid_size: float) -> Tuple[pd.DataFrame, pd.DataFrame] :
     n_valid_users = int(train['user_id'].nunique() * valid_size)
     valid_users = np.random.choice(train['user_id'].unique(), n_valid_users, replace=False)
 

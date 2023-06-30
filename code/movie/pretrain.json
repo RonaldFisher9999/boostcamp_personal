@@ -1,0 +1,7 @@
+{
+  "infer_k": 10,
+  "model_dir": "./model/",
+  "model_name": "best",
+  "data_dir": "../../data/movie/",
+  "output_dir": "./output/"
+}
