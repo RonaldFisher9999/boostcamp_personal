@@ -1,0 +1,20 @@
+{
+  "model_name": "DeepFFM",
+  "valid_size": 0.2,
+  "batch_size": 512,
+  "embed_dim": 16,
+  "mlp_dims": [64, 64, 64],
+  "dropout_rate": 0.2,
+  "use_bn": true,
+  "lr": 0.001,
+  "n_epochs": 2,
+  "max_patience": 15,
+  "seed": 327,
+  "device": "cuda",
+  "processed": true,
+  "save": false,
+  "data_dir": "../../data/book/",
+  "model_dir": "./model/",
+  "output_dir": "./output/",
+  "logging": false
+}

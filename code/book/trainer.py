@@ -96,7 +96,7 @@ def run(model,
     return best_loss, best_epoch
 
 
-def inference(model, test_loader, sub_df, model_dir, timestamp, output_dir):
+def inference(model, test_loader, sub_df, model_dir, output_dir, timestamp):
     model.eval()
     state_dict = torch.load(os.path.join(model_dir, f'model_{timestamp}.pt'))['model']
     model.load_state_dict(state_dict)

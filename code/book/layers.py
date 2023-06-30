@@ -104,10 +104,10 @@ class FieldAwareFeaturesEmbedding(nn.Module):
 
         Returns
         ---------
-        y : Float tensor of size (batch_size, num_fields, embedding_dim)
+        y : List of num_fields tensors of size (batch_size, embedding_dim)
         """
-        y = [embedding(x[..., i]) for i, embedding in enumerate(self.embeddings)]
-        y = torch.stack(y, dim=1)
+        y = [embedding(x[:, i]) for i, embedding in enumerate(self.embeddings)]
+        
         return y
     
     
@@ -141,3 +141,57 @@ class PairwiseInteraction(nn.Module):
         y = 0.5 * (square_of_sum - sum_of_square)
         y = torch.sum(y, dim=1).unsqueeze(-1)
         return y
+    
+
+class DNNLayer(nn.Module):
+    '''The Multi Layer Percetron (MLP); Fully-Connected Layer (FC); Deep Neural Network (DNN) with 1-dimensional output
+    Parameter
+        input_dim : Input feature dimension (= num_fields * embed_dim)
+        mlp_dims : List of positive integer, the layer number and units in each layer
+        dropout_rate : Float value in [0,1). Fraction of the units to dropout
+        use_bn : Boolean value to indicate usage of batch normalization.
+    '''
+    def __init__(self, input_dim, mlp_dims, dropout_rate, use_bn):
+        super().__init__()
+        self.input_dim = input_dim
+        self.mlp_dims = [input_dim] + mlp_dims
+        self.dropout = nn.Dropout(dropout_rate)
+        self.use_bn = use_bn
+        self.num_layers = len(mlp_dims)
+        # mlp layers
+        self.linears = nn.Sequential()
+        for i in range(self.num_layers) :
+            self.linears.add_module(f'linear_{i+1}', nn.Linear(self.mlp_dims[i], self.mlp_dims[i+1], bias=True))
+            if self.use_bn :
+                self.linears.add_module(f'batchnorm_{i+1}', nn.BatchNorm1d(self.mlp_dims[i+1]))
+            self.linears.add_module(f'activation_{i+1}', nn.ReLU(inplace=True))
+            self.linears.add_module(f'dropout_{i+1}', self.dropout)
+        # 마지막 출력층
+        self.output_linear = nn.Linear(self.mlp_dims[-1], 1, bias=False)
+        # print(self.linears)
+        # print(self.output_linear)
+    
+        self._initialize_weights()
+        
+    def _initialize_weights(self):
+        for m in self.modules():
+            if isinstance(m, nn.Linear):
+                nn.init.normal_(m.weight, 0, 0.01)
+                if m.bias is not None:
+                    nn.init.constant_(m.bias, 0)
+
+    def forward(self, x):
+        '''
+        Parameter
+            x : nD tensor of size "(batch_size, ..., input_dim)"
+               The most common situation would be a 2D input with shape "(batch_size, input_dim)".
+        
+        Return
+            y_dnn : nD tensor of size "(batch_size, ..., 1)"
+               For instance, if input x is 2D tensor, the output y would have shape "(batch_size, 1)".
+        '''
+        x = self.linears(x)
+        y_dnn = self.output_linear(x)
+            
+        return y_dnn
+
