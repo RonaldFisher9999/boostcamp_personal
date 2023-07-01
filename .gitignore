@@ -1,4 +1,6 @@
-data/
+data/book/
+data/dkt/
+data/movie/
 model/
 output/
 wandb/
