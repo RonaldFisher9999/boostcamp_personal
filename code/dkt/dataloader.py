@@ -8,10 +8,8 @@ from typing import Tuple
 # 데이터 불러오기
 def load_data(data_dir: str) -> Tuple[pd.DataFrame, pd.DataFrame]:
     dtype = {'userID': 'int16', 'answerCode': 'int8', 'KnowledgeTag': 'int16'}
-    raw_train_df = pd.read_csv(os.path.join(data_dir, "train_data.csv"),
-                               dtype=dtype, parse_dates=['Timestamp'])
-    raw_test_df = pd.read_csv(os.path.join(data_dir, "test_data.csv"),
-                              dtype=dtype, parse_dates=['Timestamp'])
+    raw_train_df = pd.read_csv(os.path.join(data_dir, "train_data.csv"), dtype=dtype)
+    raw_test_df = pd.read_csv(os.path.join(data_dir, "test_data.csv"), dtype=dtype)
     
     return raw_train_df, raw_test_df
 
@@ -21,6 +19,7 @@ def process_data(raw_df: pd.DataFrame) -> pd.DataFrame:
     df = raw_df[['userID', 'assessmentItemID', 'answerCode']].copy()
     df.drop_duplicates(subset=["userID", "assessmentItemID"], keep="last", inplace=True)
     df.columns = ['user_id', 'item_id', 'answer']
+    
     df['item_cat'] = df['item_id'].str[2].astype('int8')
     user_group = df.drop_duplicates(subset=['user_id'], keep='last').set_index('user_id')['item_cat']
     df['user_group'] = df['user_id'].map(user_group)
@@ -28,6 +27,7 @@ def process_data(raw_df: pd.DataFrame) -> pd.DataFrame:
     df.drop('item_cat', axis=1, inplace=True)         
 
     return df
+
 
 # 유저 평균 정답률로 그룹 생성
 # def process_data(raw_df) :
@@ -78,22 +78,57 @@ def get_index(data: pd.DataFrame) -> dict :
 # edge : 유저-아이템 엣지 정보
 # label : 맞았으면 1, 틀렸으면 0
 # group : 각 그룹에 어떤 유저가 속해있는지를 저장한 딕셔너리
-def df_to_graph(data: pd.DataFrame, id2index: dict, device: str) -> dict :
-    graph = dict()
+def process_train_data(train_df: pd.DataFrame, id2index: dict, device: str) -> dict :
+    train_df['user_id'] = train_df['user_id'].map(id2index)
+    train_df['item_id'] = train_df['item_id'].map(id2index)
     
-    df = data.copy()
-    df['user_id'] = df['user_id'].map(id2index)
-    df['item_id'] = df['item_id'].map(id2index)
+    edge = torch.LongTensor(train_df.values.T[0:2]).to(device)
+    label = torch.LongTensor(train_df.values.T[2]).to(device)
+    user_group = train_df.groupby('user_group')['user_id'].unique().to_dict()
+
+    graph = {'edge': edge,
+             'label': label}
     
-    edge = torch.LongTensor(df.values.T[0:2])
-    label = torch.LongTensor(df.values.T[2])
-    graph['edge'] = edge.to(device)
-    graph['label'] = label.to(device)
+    train_data = {'user_group': user_group,
+                  'graph': graph}
     
-    user_group = df.groupby('user_group')['user_id'].unique().to_dict()
-    graph['group'] = user_group
+    return train_data
+
+
+def process_valid_data(valid_df: pd.DataFrame,
+                       id2index: dict,
+                       device: str) -> dict :
+    val_id2index = id2index.copy()
     
-    return graph
+    # 기존에 유저 id를 인덱싱했던 id2index에 새 유저의 인덱싱 정보 추가
+    val_new_users = valid_df['user_id'].unique()
+    for i, user_id in enumerate(val_new_users) :
+        val_id2index[user_id] = i + len(id2index)
+    valid_df['user_id'] = valid_df['user_id'].map(val_id2index)
+    valid_df['item_id'] = valid_df['item_id'].map(val_id2index)
+    
+    # 각 유저에 대응되는 그룹 리스트
+    user_group = valid_df.drop_duplicates(subset=['user_id'], keep='last')['user_group'].values
+    
+    target_df = valid_df.drop_duplicates(subset=['user_id'], keep='last')
+    input_df = valid_df[~valid_df.index.isin(target_df.index)]
+    
+    input_edge = torch.LongTensor(input_df.values.T[0:2]).to(device)
+    input_label = torch.LongTensor(input_df.values.T[2]).to(device)
+    
+    target_edge = torch.LongTensor(target_df.values.T[0:2]).to(device)
+    target_label = torch.LongTensor(target_df.values.T[2]).to(device)
+    
+    input_graph = {'edge' : input_edge,
+                   'label' : input_label}
+    target_graph = {'edge' : target_edge,
+                    'label' : target_label}
+    
+    valid_data = {'user_group': user_group,
+                  'input_graph': input_graph,
+                  'target_graph': target_graph}
+    
+    return valid_data
 
 
 # 다 묶어서
@@ -105,21 +140,12 @@ def prepare_data(data_dir: str, valid_size:float, device: str) -> dict :
     n_users = train_df['user_id'].nunique()
     n_items = train_df['item_id'].nunique()
     id2index = get_index(train_df)
-    train_graph = df_to_graph(train_df, id2index, device)
+    train_data = process_train_data(train_df, id2index, device)
+    valid_data = process_valid_data(valid_df, id2index, device)
+    test_data = process_valid_data(test_df, id2index, device)
     
-    data = {'train_graph' : train_graph,
-            'id2index' : id2index,
-            'valid_df' : valid_df,
-            'test_df' : test_df,
-            'n_users' : n_users,
-            'n_items' : n_items}
+    data = {'train' : train_data,
+            'valid': valid_data,
+            'test': test_data}
     
-    return data
-
-
-def view_data_info(data: dict) :
-    print("Train Data Info")
-    print(f"Number of Users : {data['n_users']}")
-    print(f"Number of Items : {data['n_items']}")
-    print(f"Number of Edges : {len(data['train_graph']['label'])}")
-    print(f"Number of Groups : {len(data['train_graph']['group'])}")
+    return data, n_users, n_items

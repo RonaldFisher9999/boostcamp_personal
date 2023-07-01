@@ -15,7 +15,8 @@ def main():
         
     os.makedirs(name=CONFIG['model_dir'], exist_ok=True)
     os.makedirs(name=CONFIG['output_dir'], exist_ok=True)
-     
+    assert model_name in ["FM", "FFM", "DeepFM"], "'model_name' must be 'FM', 'FFM', or 'DeepFM'." 
+    assert CONFIG['device'] in ['cuda', 'cpu'], "'device' must be 'cuda' or 'cpu'."
     timestamp = get_timestamp()
     set_seeds(CONFIG['seed'])
     
@@ -34,7 +35,7 @@ def main():
         try:
             wandb.login(key=key)
             wandb.init(
-                project="book-rec",
+                project="book_rec",
                 name=f"{CONFIG['model_name']}-{timestamp}",
                 config=CONFIG,
             )
@@ -54,7 +55,6 @@ def main():
     
     print(f"Create {CONFIG['model_name']} model.")
     model_name = CONFIG['model_name']
-    assert model_name in ["FM", "FFM", "DeepFM"], "'model_name' must be 'FM', 'FFM', or 'DeepFM'."
     
     if model_name == "FM":
         model = FM(field_dims,

@@ -39,8 +39,8 @@ def main():
         try:
             wandb.login(key=key)
             wandb.init(
-                project="book-rec",
-                name=f"{CONFIG['model_name']}-{timestamp}",
+                project="movie-rec",
+                name=f"BERT4Rec-{timestamp}",
                 config=CONFIG,
             )
         except:
