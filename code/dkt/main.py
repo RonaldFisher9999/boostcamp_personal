@@ -2,8 +2,6 @@ import os
 import json
 import torch
 import wandb
-
-from args import parse_args
 from utils import set_seeds, get_timestamp
 from dataloader import prepare_data
 from model import LightGCN
@@ -59,7 +57,7 @@ def main() :
                      CONFIG['embed_dim'],
                      CONFIG['n_layers']).to(device)
     
-    print(f"Train For {CONFIG['valid_n_epochs']} Epochs.")
+    print(f"Train For {CONFIG['train_n_epochs']} Epochs.")
     best_auc, best_epoch = run(model,
                                data,
                                CONFIG['train_n_epochs'],
