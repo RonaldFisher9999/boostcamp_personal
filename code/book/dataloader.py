@@ -129,11 +129,11 @@ def books_ratings_process(raw_books, raw_train_ratings, raw_test_ratings) :
     books['isbn_area'] = books['isbn'].apply(isbn_area)
     # 선택
     aut_cnt = books['book_author'].value_counts()
-    low_cnt_aut = aut_cnt[aut_cnt < 10].index
+    low_cnt_aut = aut_cnt[aut_cnt < 2].index
     books.loc[books['book_author'].isin(low_cnt_aut), 'book_author'] = 'others'
     # 선택
     pub_cnt = books['publisher'].value_counts()
-    low_cnt_pub = pub_cnt[pub_cnt < 10].index
+    low_cnt_pub = pub_cnt[pub_cnt < 2].index
     books.loc[books['publisher'].isin(low_cnt_pub), 'publisher'] = 'others'
     # 선택
     cat_cnt = books['major_cat'].value_counts()
@@ -141,7 +141,7 @@ def books_ratings_process(raw_books, raw_train_ratings, raw_test_ratings) :
     books.loc[books['major_cat'].isin(low_cnt_cat), 'major_cat'] = 'others'
     # 선택
     area_cnt = books['isbn_area'].value_counts()
-    low_cnt_area = area_cnt[area_cnt < 5].index
+    low_cnt_area = area_cnt[area_cnt < 2].index
     books.loc[books['isbn_area'].isin(low_cnt_area), 'isbn_area'] = 'others'
     
     train_ratings.drop(columns=['img_url'], inplace=True)

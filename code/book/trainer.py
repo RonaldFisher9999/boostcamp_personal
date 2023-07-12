@@ -66,7 +66,7 @@ def run(model,
     patience = 0
     state_dict = dict()
     for epoch in tqdm(range(1, n_epochs+1)): 
-        print(f"Epoch: {epoch}")
+        print(f"\nEpoch: {epoch}")
         print("Train")
         train_loss = train(model, train_loader, criterion, optimizer)
         print(f"Train Loss: {train_loss:.4f}")
