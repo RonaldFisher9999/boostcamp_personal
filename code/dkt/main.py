@@ -15,10 +15,10 @@ def main() :
         
     os.makedirs(name=CONFIG['model_dir'], exist_ok=True)
     os.makedirs(name=CONFIG['output_dir'], exist_ok=True)
-    assert CONFIG['device'] in ['cuda', 'cpu'], "'device' must be 'cuda' or 'cpu'."
     timestamp = get_timestamp()
     set_seeds(CONFIG['seed'])
     
+    assert CONFIG['device'] in ['cuda', 'cpu'], "'device' must be 'cuda' or 'cpu'."
     if CONFIG['device'] == 'cuda':
         if torch.cuda.is_available() == True :
             device = torch.device('cuda')

@@ -24,6 +24,7 @@ def main():
     set_seeds(CONFIG['seed'])
     timestamp = get_timestamp()
     
+    assert CONFIG['device'] in ['cuda', 'cpu'], "'device' must be 'cuda' or 'cpu'."
     if CONFIG['device'] == 'cuda':
         if torch.cuda.is_available() == True :
             device = torch.device('cuda')
