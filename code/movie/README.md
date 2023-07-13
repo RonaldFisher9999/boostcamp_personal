@@ -1,38 +1,60 @@
-```bash
-conda init
-conda create -n seq python=3.9 -y
-conda activate seq
-pip install -r requirements.txt
-```
+## Parameters
+
+### Base config(`config.json`)
+
+- `max_len` (int)
+  - Maximum length of a sequence. (default=200)
+- `n_samples` (int)
+  - Number of sample sequences per user. (default=10)
+- `tail_ratio` (float)
+  - Ratio of tail items in a sampled sequence. (default=0.5)
+- `k` (int)
+  - Number of recommendations. (default=10)
+- `mask_prob` (float)
+  - Masking probabilty. (default=0.5)
+- `embed_dim` (int)
+  - Dimension of embedding vector. (default=128)
+- `n_layers` (int)
+  - Number of encoder layers. (default=2)
+- `n_heads` (int)
+  - Number of heads in Self-attention. (default=4)
+- `pffn_hidden_dim` (int)
+  - Hidden dimension of point-wise feed forward network in a encoder layer. (default=512)
+- `dropout_rate` (float)
+  - Dropout rate. (default=0.3)
+- `unidirection` (bool)
+  - Whether the model is unidirectional. (default=false)
+- `batch_size` (int)
+  - Batch size. (default=128)
+- `lr` (float)
+  - Learning rate. (default=0.001)
+- `n_epochs` (int)
+  - Number of maxiumum epochs for training. (default=100)
+- `max_patience`
+  - For early stopping, number of epochs to wait for improvement during training. (default=15)
+- `seed` (int)
+  - Random seed for reproducibility. (default=327)
+- `device` (str)
+  - Where to process the model. ['cuda', 'cpu'] (default='cuda')
+- `data_dir` (str)
+  - Directory to load input data. (default="../../data/")
+- `model_dir` (str)
+  - Directory to save/load the model. (default="./model/")
+- `output_dir` (str)
+  - Directory to save output data. (default="./output/")
+- `logging` (bool)
+  - Whether to log the training process with WandB. (default=False)
 
 
-- Basic configuration (`config.json`)
-  - max_len: Maximum sequence length. default=200
-  - n_samples: Number of sample sequences per user. default=10
-  - tail_ratio: Ratio of tail items in sampled sequences. default=0.5
-  - k: Number of recommendations. default=10
-  - mask_prob: Masking probabilty. default=0.4
-  - embed_dim: Dimension of embeddings. default=128
-  - n_layers: Number of encoder layers. default=2
-  - n_heads: Number of heads in attention. default=4
-  - pffn_hidden_dim: Hidden dimension of point-wise feed forward network in a encoder layer. default=512
-  - dropout_rate: Dropout rate. default=0.3
-  - unidirection: Indicates if the model is unidirectional. default=false
-  - batch_size: Batch size. default=256
-  - lr: Learning rate. default=0.001
-  - n_epochs: Number of epochs. default=100
-  - max_patience: Patience epochs before stopping. default=15
-  - data_dir: Directory of data. default="../../data/"
-  - model_dir: Directory of model. default="./model/"
-  - output_dir: Directory of output. default="./output/"
-  - logging: Indicates if WandB logging is enabled. default=false
-  - seed: Random seed for reproducibility. default=100
-
-
-- Making inference with pretrained model (`pretrain.json`)
-  - Configuration file(`model_name.json`) and state dictionary file(`model_name.pt`) should be located in the `model_dir` directory.
-  - infer_k: Number of recommendation. default=10.
-  - data_dir: Directory of data. default="../../data/"
-  - model_dir: Directory of pretrained model and configuration file. default="./model/",
-  - model_name: Name of the model. default="best"
-  - output_dir: Directory of output. default="./output/"
+### Config for making inference with pretrained model (`pretrain.json`)
+- Configuration file(`model_name.json`) and model file(`model_name.pt`) should be located in the `model_dir` directory.
+- `infer_k` (int)
+  - Number of recommendations. default=20.
+- `data_dir` (str)
+  - Directory to load input data. (default="../../data/")
+- `model_dir` (str)
+  -  Directory to load configuration file and pretrained model. (default="./model/")
+- `model_name` (str)
+  - File name of the pretrained model. (default="best")
+- `output_dir` (str)
+  - Directory to output data. (default="./output/")

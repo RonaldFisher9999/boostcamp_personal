@@ -35,4 +35,4 @@
 - `output_dir` (str)
   - Directory for output data. (default="./output/")
 - `logging` (bool)
-  - Whether to log the training process with WandB. (default=True)
+  - Whether to log the training process with WandB. (default=False)

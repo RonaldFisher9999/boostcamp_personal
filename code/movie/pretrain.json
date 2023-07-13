@@ -1,5 +1,5 @@
 {
-  "infer_k": 10,
+  "infer_k": 20,
   "model_dir": "./model/",
   "model_name": "best",
   "data_dir": "../../data/movie/",
