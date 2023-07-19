@@ -1,5 +1,5 @@
 {
-  "max_len": 200,
+  "max_len": 100,
   "n_samples": 10, 
   "tail_ratio": 0.5, 
   "k": 10, 
@@ -19,5 +19,5 @@
   "data_dir": "../../data/movie/", 
   "model_dir": "./model/", 
   "output_dir": "./output/", 
-  "logging": false
+  "logging": true
 }

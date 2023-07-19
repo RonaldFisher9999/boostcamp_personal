@@ -21,21 +21,30 @@
 ### 1. 개요
 - 부스트캠프 교육 과정 중 참여한 팀 대회
 - 영화 시청 이력(유저, 영화, 시간)과 영화에 대한 데이터(장르, 감독, 개봉연도 등) 제공
-- 유저의 영화 시청 이력 중 마지막 N개, 중간 랜덤 M개 추출
-- 10개의 영화를 추천해 추출된 영화에 대한 예측 (Recall@10으로 평가)
+- 유저의 영화 시청 이력 중 **마지막 N개, 중간 랜덤 M개 추출**
+- **10개의 영화를 추천**해 추출된 영화에 대한 예측 (**Recall@10**으로 평가)
 
 ### 2. 역할 및 기여
-- BERT4Rec 모델 구현 및 고도화
-  - 모델 선정 이유
-    - 대회의 task가 Masked Language Modeling과 유사하다고 생각하여 해당 모델 선택
-  - 사용 library
-    - PyTorch
-  - 제공된 baseline 코드는 구현에 문제가 있고, top K 추천에 부적합
-  - 논문을 먼저 그대로 구현한 후 모델을 task에 적합하도록 수정
-  - Train/Valid 데이터 준비
-    - 유저의 전체 데이터에서 마지막 5개, 중간 랜덤 5개 추출하여 valid label로 사용
-    -	남은 데이터에서 sequence 샘플 여러 개 추출하여 train 데이터로 사용
-    - train 데이터의 마지막 5개, 나머지 데이터에서 랜덤한 비율로 masking
+- **BERT4Rec** 모델 구현 및 실험
+  - **대회의 task가 Masked Language Modeling과 유사**하다고 생각하여 해당 모델 선택
+  - 논문을 먼저 그대로 구현한 후 **모델을 task에 적합하도록 수정**
+  - 구현
+    - Valid data 생성
+      - 유저 sequence마다 마지막 5개, 중간 5개의 랜덤 아이템 valid label로 사용
+      - 남은 데이터에서 유저마다 `max_len - 10` 길이의 sequence 샘플링해서 valid data로 사용
+    - Train data 생성
+      -	Valid label을 제외한 데이터에서 유저마다 `max_len` 길이의 sequence `n_samples` 개수만큼 샘플링
+      - 이때 `tail_ratio`의 비율만큼 마지막 아이템 사용
+        ```
+        ex) total sequnce length = 200, max_len = 100, tail_ratio = 0.25  
+        마지막 25개 제외한 475개의 아이템 중 75개 + 마지막 25개 아이템
+        ```
+      - 각 샘플마다 마지막 5개, 중간 랜덤 5개 아이템에 마스킹
+    - 모델 구조
+      - Input layer, Encoder layer, Output layer로 구성
+      - Input layer
+        - Sequence의 아이템을 embedding vector로 변환
+        - 
   - Validation
     -	valid label을 제외한 데이터에서 sequence length - 10개의 데이터 샘플링
     - 이 샘플링 된 데이터의 마지막 5자리, 중간 랜덤 5자리에 mask 10개를 섞어줌

@@ -1,11 +1,9 @@
 --extra-index-url https://download.pytorch.org/whl/cu118
 torch==2.0.0+cu118
-pandas
-numpy
-scikit-learn
-matplotlib
-seaborn
+pandas==2.0.2
+numpy==1.25.0
+scikit-learn==1.2.2
 torch_geometric
-tqdm
-packaging
+tqdm==4.65.0
+packaging==23.1
 wandb

@@ -73,7 +73,7 @@ def process_data(train_df: pd.DataFrame,
     valid_cand = list()
     infer_cand = list()
     for user_idx, user_total in enumerate(tqdm(total)):
-        # user_valid_target: 맨 뒤에서 절반, 중간에서 절반 추출
+        # user_valid_target: 맨 뒤에서 절반, 중간에서 랜덤 절반 추출
         user_valid_target = np.random.choice(user_total[:-(k//2)], (k//2), replace=False)
         user_valid_target = np.append(user_valid_target, user_total[-(k-k//2):])
         valid_target.append(user_valid_target)
@@ -81,7 +81,7 @@ def process_data(train_df: pd.DataFrame,
         # user_total_train: user_valid_target 제외
         user_total_train = user_total[~np.isin(user_total, user_valid_target)]
         
-        # user_train_seq: user_total_train에서 max_len만큼 샘플링(n_samples 횟수 만큼)
+        # user_train_seq: user_total_train에서 max_len만큼 샘플링(n_samples 수만큼)
         for _ in range(n_samples):
             user_train_seq = seq_sampling(user_total_train, max_len, tail_ratio)
             train_seq.append(user_train_seq)
