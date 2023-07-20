@@ -30,6 +30,7 @@ code 폴더 아래 book, dkt, movie 폴더의 main.py 파일 실행
 - 대회의 task는 **Masked Language Modeling(MLM)과 유사**
 - **MLM에 사용하는 BERT 모델을 추천 task에 적용**한 BERT4Rec 모델 선택
 - 논문을 먼저 그대로 구현한 후 **모델을 task에 적합하도록 수정**
+  - 참고: [BERT4Rec, SASRec 비교]
 - PyTorch 사용
   
 <details>
