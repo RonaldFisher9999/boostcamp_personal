@@ -13,6 +13,7 @@
 
 #### 3. `main.py` 파일 실행
 - code 폴더 아래 book, dkt, movie 폴더의 main.py 파일 실행
+  ```
   python main.py
   ```
 
