@@ -34,6 +34,7 @@ class FeaturesLinear(nn.Module):
         """
         x = x + x.new_tensor(self.offsets).unsqueeze(0)
         y = torch.sum(self.fc(x), dim=1) + self.bias
+        
         return y
     
     
@@ -69,9 +70,9 @@ class FeaturesEmbedding(nn.Module):
         """
         x = x + self.offsets.unsqueeze(0).to(x.device)
         y = self.embedding(x)
+        
         return y
 
-    
     
 class FieldAwareFeaturesEmbedding(nn.Module):
     """
@@ -140,6 +141,7 @@ class PairwiseInteraction(nn.Module):
         sum_of_square = torch.sum(x ** 2, dim=1)
         y = 0.5 * (square_of_sum - sum_of_square)
         y = torch.sum(y, dim=1).unsqueeze(-1)
+        
         return y
     
 

@@ -4,11 +4,8 @@ import numpy as np
 from layers import FeaturesLinear, FeaturesEmbedding, FieldAwareFeaturesEmbedding, PairwiseInteraction, DNNLayer
 
 
-
 class FM(nn.Module):
     """
-    A class implementing the Factorization Machine model.
-    
     Parameters
     ----------
     field_dims : List[int]
@@ -31,8 +28,6 @@ class FM(nn.Module):
 
     def forward(self, x):
         """
-        Forward pass through the Factorization Machine model.
-
         Parameters
         ----------
         x : Long tensor of size (batch_size, num_fields)
@@ -45,14 +40,12 @@ class FM(nn.Module):
         embed_x = self.embedding(x)
         y_interaction = self.interaction(embed_x)
         y = y_linear + y_interaction
+        
         return y.squeeze(1)
 
 
-
 class FFM(nn.Module):
-    """
-    A class implementing the Factorization Machine model.
-    
+    """   
     Parameters
     ----------
     field_dims : List[int]
@@ -87,11 +80,12 @@ class FFM(nn.Module):
         embed_x = self.embedding(x)
         y_interaction = self.interaction(torch.stack(embed_x, dim=1))
         y = y_linear + y_interaction
+        
         return y.squeeze(1)
 
 
 class DeepFM(nn.Module):
-    '''The DeepFM architecture
+    '''
     Parameter
         field_dims : List of field dimensions
         args.embed_dim : Factorization dimension for dense embedding
@@ -124,11 +118,6 @@ class DeepFM(nn.Module):
                             use_bn)
         self.device = device
         
-        # self.encoding_dims = np.concatenate([[0], np.cumsum(self.field_dims)[:-1]])
-        # self.encoding_dims = np.array((0, *np.cumsum(self.field_dims)[:-1]), dtype=np.int32)
-        # print(f"encoding_dims : {self.encoding_dims}")
-        
-               
     def forward(self, x):
         '''
         Parameter
@@ -145,8 +134,6 @@ class DeepFM(nn.Module):
         
         y_dnn = self.dnn(torch.cat(embed_x, dim=1))
         
-        # print(y_ffm.shape)
-        # print(y_dnn.shape)
         y = y_ffm + y_dnn
 
         return y.squeeze(1)

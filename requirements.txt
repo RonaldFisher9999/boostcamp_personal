@@ -3,7 +3,6 @@ torch==2.0.0+cu118
 pandas==2.0.2
 numpy==1.25.0
 scikit-learn==1.2.2
-torch_geometric
+torch_geometric==2.3.1
 tqdm==4.65.0
-packaging==23.1
-wandb
+wandb==0.15.4
