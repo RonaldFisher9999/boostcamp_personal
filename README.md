@@ -30,7 +30,7 @@ code 폴더 아래 book, dkt, movie 폴더의 main.py 파일 실행
 - 대회의 task는 **Masked Language Modeling(MLM)과 유사**
 - **MLM에 사용하는 BERT 모델을 추천 task에 적용**한 BERT4Rec 모델 선택
 - 논문을 먼저 그대로 구현한 후 **모델을 task에 적합하도록 수정**
-  - 참고: [BERT4Rec, SASRec 비교]
+  - 참고: [BERT4Rec, SASRec 비교](https://github.com/RonaldFisher9999/boostcamp_personal/blob/master/assets/sasrec_bert4rec.pdf)
 - PyTorch 사용
   
 <details>
@@ -104,6 +104,7 @@ code 폴더 아래 book, dkt, movie 폴더의 main.py 파일 실행
 - 유저와 문제를 node로, 정답 여부를 edge로 간주하면 **edge-prediction task와 유사**
 - GNN 계열 모델 중 **구조가 단순하면서도, 괜찮은 성능**을 보인다고 알려진 LightGCN 모델 선택
 - PyTorch, PyTroch Geometric 사용
+  - 참고: [GCN & PyG tutorial](https://github.com/RonaldFisher9999/boostcamp_personal/blob/master/assets/torch_geometric_tutorial.ipynb)
 
 <details>
 <summary>상세</summary>
@@ -139,6 +140,7 @@ code 폴더 아래 book, dkt, movie 폴더의 main.py 파일 실행
 #### 2.3 **Boosting 계열 모델**(LightGBM, CatBoost) 실험
 - **정형 데이터에서 좋은 성능**을 낸다고 알려진 모델
 - **feature 30개 이상 생성 후** lofo-importance 패키지 사용하여 **15개 선택**
+  - 참고: [lofo-importance tutorial](https://github.com/RonaldFisher9999/boostcamp_personal/blob/master/assets/lofo_example.ipynb)
 - 팀원이 작성한 **Hyperopt**를 사용하는 코드로 **하이퍼파라미터 튜닝**
 #### 2.4 Saint+ 모델 실험 보조
 -	팀원이 구현한 Saint+ 모델에서 오류 수정
