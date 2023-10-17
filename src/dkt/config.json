@@ -13,5 +13,5 @@
   "data_dir": "../../data/dkt/",
   "model_dir": "./model/",
   "output_dir": "./output/",
-  "logging": true
+  "logging": false
 }

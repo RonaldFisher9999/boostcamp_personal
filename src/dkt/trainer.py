@@ -1,6 +1,5 @@
 import os
 import copy
-import json
 import pandas as pd
 import numpy as np
 import torch
@@ -9,6 +8,7 @@ from sklearn.metrics import accuracy_score, roc_auc_score
 from tqdm import tqdm
 from typing import Tuple
 import wandb
+from torch_geometric.utils import to_undirected
 
 
 # 모델 훈련. auc, acc, loss 반환    
@@ -16,7 +16,7 @@ def train(model: nn.Module,
           train_graph: dict,
           optimizer: torch.optim) -> Tuple[float, float, float] :
     model.train()
-    pred = model.forward(train_graph['edge'])
+    pred = model.forward(to_undirected(train_graph['edge']))
     
     label = train_graph['label'].float()
     loss = model.link_pred_loss(pred, label)
